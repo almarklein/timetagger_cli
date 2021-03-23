@@ -29,8 +29,7 @@ config_fname = "config.txt"
 
 
 def load_config():
-    """ Load the config file and validate contents.
-    """
+    """Load the config file and validate contents."""
     filename = os.path.join(user_config_dir("timetagger_cli"), config_fname)
     if not os.path.isfile(filename):
         raise RuntimeError("Config not set, run 'timetagger setup' first.")
@@ -44,8 +43,7 @@ def load_config():
         raise RuntimeError(
             "The api_url must start with 'http://' or 'https://'. Run 'timetagger setup' to fix."
         )
-
-    if not ("api_token" in config and config["api_token"].strip()):
+    if "api_token" not in config:
         raise RuntimeError("No api_token set in config. Run 'timetagger setup' to fix.")
     return config
 
@@ -64,7 +62,7 @@ def prepare_config_file():
         else:
             with open(filename, "wb") as f:
                 f.write(initial_config_text.encode())
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         print(f"Could not prepare config file: {err}")
 
     return filename

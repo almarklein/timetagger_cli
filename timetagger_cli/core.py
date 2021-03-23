@@ -16,10 +16,12 @@ def request(method, path, body=None):
         assert isinstance(body, (list, dict))
 
     config = load_config()
-
     url = config["api_url"].rstrip("/") + "/" + path.lstrip("/")
-    headers = {"authtoken": config["api_token"]}
+    token = config["api_token"].strip()
+    if not token:
+        raise RuntimeError("api_token not set, run 'timetagger setup' first.")
 
+    headers = {"authtoken": token}
     response = requests.request(method.upper(), url, json=body, headers=headers)
 
     if response.status_code == 200:
@@ -29,8 +31,7 @@ def request(method, path, body=None):
 
 
 def print_records(records):
-    """ Pretty-print a list of records.
-    """
+    """Pretty-print a list of records."""
     # Sort
     records = sorted(records, key=lambda r: r["t1"])
 
@@ -67,9 +68,7 @@ def setup():
     """Edit the API URL and token by opening the config file in your default editor."""
     filename = prepare_config_file()
     print("Config file: " + filename)
-    print(
-        "Will now (try to) open the config file. Just edit and safe the file, and you're good!"
-    )
+    print("Will now (try to) open the config file. Just edit and safe the file.")
     open_with_os_default(filename)
 
 
