@@ -1,5 +1,6 @@
 import time
 import datetime
+import webbrowser
 
 import requests
 
@@ -62,6 +63,15 @@ def get_running_records():
 
 
 # %% The commands
+
+
+def app():
+    """ Open the TimeTagger app in your default browser."""
+    config = load_config()
+    parts = config["api_url"].rstrip("/").split("/")
+    url = "/".join(parts[:-2]) + "/app/"
+    print(f"Opening {url}")
+    webbrowser.open(url)
 
 
 def setup():
