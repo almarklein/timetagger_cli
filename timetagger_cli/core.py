@@ -107,7 +107,6 @@ def start(description):
         r["t2"] = now
 
     # Create new record
-    now = time.time()
     r = {
         "key": generate_uid(),
         "t1": now,

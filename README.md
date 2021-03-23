@@ -5,7 +5,31 @@
 Track your time from the command-line
 
 
-```bash
+## Introduction
+
+This is a command line interface (CLI) that connects to a
+[TimeTagger](https://github.com/almarklein/timetagger) server.
+This can be the server at https://timetagger.app, or a self-hosted server.
+
+The idea is to provide a quick way to track time for devs who are already using
+a terminal.
+
+
+## Installation
+
+```
+$ pip install timetagger_cli
+```
+
+The TimeTagger CLI requires Python 3.6 or higher. It has very few [dependencies](requirements.txt).
+
+
+## Docs
+
+After installation, you should be able to use the `timetagger`command.
+Run it without arguments to get the list of available subcommands:
+
+```
 $ timetagger
 usage: timetagger command [arguments]
 
@@ -27,13 +51,16 @@ Available commands:
         Start timer with the given description. Use '#' to create tags.
     stop
         Stop any running timers.
+```
 
 
+## Example
+
+```
 $ timetagger status
-
-Hours clocked this week: 11:32
-Hours clocked today: 6:50
-There are 2 running timers.
+Hours clocked this week: 11:42
+Hours clocked today: 7:00
+Running: 0:01 - #timeapp #oss more cli
 
 Todays records:
           Started           Stopped  Duration  Description
@@ -42,6 +69,25 @@ Todays records:
  2021-03-23 13:06             14:00      0:53  #timeapp #oss cli
  2021-03-23 14:00             14:58      0:58  #oss #vispy #meeting
  2021-03-23 15:23             15:23      0:00  HIDDEN #oss #vispy #meeting
- 2021-03-23 15:24                 -      1:51  #timeapp #oss cli
- 2021-03-23 17:13                 -      0:01  #timeapp #oss more cli
- ```
+ 2021-03-23 15:24             17:13      1:49  #timeapp #oss cli
+ 2021-03-23 17:13                 -      0:12  #timeapp #oss more cli
+```
+
+
+## License
+
+MIT
+
+
+## Developers
+
+Additional developer dependencies:
+```
+pip install invoke black flake8 pytest
+```
+
+* `invoke -l` to see available invoke tasks
+* `invoke clean` to remove temporary files
+* `invoke format` to autoformat the code (using black)
+* `invoke lint` to detect linting errors (using flake8)
+* `invoke tests` to run tests (using pytest)
