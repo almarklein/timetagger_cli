@@ -47,6 +47,7 @@ funcs, docs = _make_func_dict_and_docs(
     "Available commands:",
     version,
     help,
+    timetagger_cli.app,
     timetagger_cli.setup,
     timetagger_cli.status,
     timetagger_cli.start,
