@@ -17,15 +17,14 @@ a terminal.
 
 ## Installation
 
+The TimeTagger CLI requires Python 3.6 or higher. Install with `pip`:
 ```
 $ pip install timetagger_cli
 ```
 
-The TimeTagger CLI requires Python 3.6 or higher. It has very few [dependencies](requirements.txt).
-
 After installation, you should be able to use the `timetagger`command.
 
-Now run `timetagger setup` to setup the API's url and authentication token.
+Start by running `timetagger setup` to setup the API's url and authentication token.
 
 
 ## Docs
