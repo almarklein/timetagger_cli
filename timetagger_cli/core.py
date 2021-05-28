@@ -104,6 +104,11 @@ def start(description):
     # Get running records, to stop them
     running_records = get_running_records()
     for r in running_records:
+        if r.get("ds") == description:
+            print("Timer with this description is already running.")
+            print()
+            print_records([r])
+            return
         r["t2"] = now
 
     # Create new record
