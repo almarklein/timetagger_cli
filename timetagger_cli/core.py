@@ -105,6 +105,7 @@ def start(description):
     running_records = get_running_records()
     for r in running_records:
         if r["ds"] == description:
+            print("Timer with this description is already running.")
             print()
             print_records([r])
             return
