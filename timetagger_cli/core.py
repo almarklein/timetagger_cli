@@ -174,7 +174,7 @@ def status():
 
     # Collect records
     ob = request("GET", f"records?timerange={t_week1}-{t_week2}")
-    week_records = [r for r in ob["records"] if "HIDDEN" not in r["ds"]]
+    week_records = [r for r in ob["records"] if not r.get("ds", "").startswith("HIDDEN")]
     day_records = [
         r
         for r in week_records
