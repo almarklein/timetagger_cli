@@ -12,7 +12,7 @@ from .config import prepare_config_file, load_config
 
 
 def request(method, path, body=None):
-    """ Do an API request. """
+    """Do an API request."""
     if body is not None:
         assert isinstance(body, (list, dict))
 
@@ -66,7 +66,7 @@ def get_running_records():
 
 
 def app():
-    """ Open the TimeTagger app in your default browser."""
+    """Open the TimeTagger app in your default browser."""
     config = load_config()
     parts = config["api_url"].rstrip("/").split("/")
     url = "/".join(parts[:-2]) + "/app/"
@@ -98,12 +98,17 @@ def setup():
 
 
 def start(description):
-    """Start timer with the given description. Use '#' to create tags. """
+    """Start timer with the given description. Use '#' to create tags."""
     now = int(time.time())
 
     # Get running records, to stop them
     running_records = get_running_records()
     for r in running_records:
+        if r.get("ds") == description:
+            print("Timer with this description is already running.")
+            print()
+            print_records([r])
+            return
         r["t2"] = now
 
     # Create new record
@@ -131,7 +136,7 @@ def start(description):
 
 
 def stop():
-    """ Stop any running timers."""
+    """Stop any running timers."""
     now = int(time.time())
 
     # Get and stop any running records
@@ -150,7 +155,7 @@ def stop():
 
 
 def status():
-    """ Get an overview of today and this week. The exact content may change. """
+    """Get an overview of today and this week. The exact content may change."""
 
     now = int(time.time())
     d = datetime.datetime.fromtimestamp(now)

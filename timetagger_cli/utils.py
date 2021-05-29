@@ -35,7 +35,7 @@ def open_with_os_default(path):
 
 
 def user_config_dir(appname=None, roaming=False):
-    """ Get the directory to store app config files. """
+    """Get the directory to store app config files."""
     if sys.platform.startswith("win"):
         path1, path2 = os.getenv("LOCALAPPDATA"), os.getenv("APPDATA")
         path = (path2 or path1) if roaming else (path1 or path2)
@@ -54,13 +54,13 @@ def user_config_dir(appname=None, roaming=False):
 
 
 def readable_time(timestamp):
-    """ Turn a timestamp into a readable string. """
+    """Turn a timestamp into a readable string."""
     value = datetime.datetime.fromtimestamp(timestamp)
     return f"{value:%Y-%m-%d %H:%M}"
 
 
 def readable_duration(nsecs):
-    """ Turn a duration in seconds into a reabable string. """
+    """Turn a duration in seconds into a reabable string."""
     m = round(nsecs / 60)
     # return f"{m//60:.0f}h{m%60:.0f}m"
     return f"{m//60:.0f}:{m%60:02.0f}"
