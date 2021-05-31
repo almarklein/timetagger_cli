@@ -59,7 +59,7 @@ def get_running_records():
     t1 = now - 35 * 60
     t2 = now + 60
     ob = request("GET", f"records?timerange={t1}-{t2}")
-    return [r for r in ob.get("records", []) if r.get("t1", "") == r.get("t2", "")]
+    return [r for r in ob["records"] if r["t1"] == r["t2"]]
 
 
 # %% The commands
