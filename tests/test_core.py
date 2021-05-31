@@ -100,6 +100,8 @@ def test_status():
         dict(key="1", t1=now - 60, t2=now, mt=now, st=0, ds="foo"),
         dict(key="1", t1=now, t2=now + 60, mt=now, st=0, ds="foo"),
         dict(key="2", t1=now - 3600, t2=now, mt=now, st=0, ds="bar"),
+        dict(key="3", t1=now - 3600, t2=now, mt=now, st=0, ds="HIDDEN removed"),
+        dict(key="4", t1=now - 3600, t2=now, mt=now, st=0, ds="not removed HIDDEN "),
     ]
 
     response = {"records": records}
@@ -114,6 +116,8 @@ def test_status():
     lines.clear()
     assert "today:" in text and "this week:" in text
     assert "running: n/a" in text.lower()
+    assert "not removed HIDDEN" in text
+    assert "HIDDEN removed" not in text
 
     response["records"].append(dict(t1=now, t2=now))
     core.status()
