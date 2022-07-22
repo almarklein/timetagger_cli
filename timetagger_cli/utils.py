@@ -29,7 +29,10 @@ def open_with_os_default(path):
     elif sys.platform.startswith("linux"):
         # xdg-open is available on all Freedesktop.org compliant distros
         # http://superuser.com/questions/38984/linux-equivalent-command-for-open-command-on-mac-windows
-        subprocess.call(("xdg-open", path))
+        try:
+            subprocess.call(("xdg-open", path))
+        except FileNotFoundError:
+            subprocess.call(("vi", path))
     else:
         raise RuntimeError(f"Don't know how to open {path}")
 
