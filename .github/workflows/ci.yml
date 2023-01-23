@@ -16,23 +16,23 @@ jobs:
         include:
           - name: Lint
             os: ubuntu-latest
-            pyversion: '3.7'
+            pyversion: '3.9'
             dolint: 1
           - name: Linux py36
             os: ubuntu-latest
-            pyversion: '3.6'
+            pyversion: '3.8'
             tests: 1
           - name: Linux py37
             os: ubuntu-latest
-            pyversion: '3.7'
+            pyversion: '3.9'
             tests: 1
           - name: Linux py38
             os: ubuntu-latest
-            pyversion: '3.8'
+            pyversion: '3.10'
             tests: 1
           - name: Linux py39
             os: ubuntu-latest
-            pyversion: '3.9'
+            pyversion: '3.11'
             tests: 1
           - name: Linux pypy3
             os: ubuntu-latest
