@@ -78,7 +78,7 @@ def setup():
     """Edit the API URL and token by opening the config file in your default editor."""
     filename = prepare_config_file()
     print("Config file: " + filename)
-    print("Will now (try to) open the config file. Just edit and safe the file.")
+    print("Will now (try to) open the config file. Just edit and save the file.")
     open_with_os_default(filename)
 
 
