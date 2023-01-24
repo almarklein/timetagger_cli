@@ -32,7 +32,7 @@ def open_with_os_default(path):
         try:
             subprocess.call(("xdg-open", path))
         except FileNotFoundError:
-            subprocess.call((os.getenv('EDITOR', 'vi'), path))
+            subprocess.call((os.getenv("EDITOR", "vi"), path))
     else:
         raise RuntimeError(f"Don't know how to open {path}")
 
