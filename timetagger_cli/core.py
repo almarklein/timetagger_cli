@@ -169,6 +169,10 @@ def resume():
     # Get records from today
     records = request("GET", f"records?timerange={t1}-{t2}")["records"]
 
+    if len(records) == 0:
+        print("No records earlier today.")
+        return 
+
     # Remove HIDDEN records
     filtered_records = []
     for r in records:
