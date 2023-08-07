@@ -19,7 +19,6 @@ def test_load_config():
 
 
 def test_load_config_fail():
-
     # Use different config file for tests
     config.config_fname = "test_config.txt"
 

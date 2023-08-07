@@ -5,7 +5,6 @@ from _common import run_tests
 
 
 def test_print_records():
-
     lines = []
     core.print = lambda *args: lines.append(" ".join(str(x) for x in args) + "\n")
 
@@ -43,7 +42,6 @@ def test_setup():
 
 
 def test_start():
-
     response = {"records": []}
     core.request = lambda method, path, body=None: response
 
@@ -69,7 +67,6 @@ def test_start():
 
 
 def test_stop():
-
     response = {"records": []}
     core.request = lambda method, path, body=None: response
 
@@ -93,7 +90,6 @@ def test_stop():
 
 
 def test_status():
-
     now = int(time.time())
 
     records = [
