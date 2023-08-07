@@ -155,7 +155,7 @@ def stop():
 
 
 def resume():
-    """Start a timer with the same settings as previous"""
+    """Start a timer with the same description as previous."""
 
     now = int(time.time())
     d = datetime.datetime.fromtimestamp(now)
