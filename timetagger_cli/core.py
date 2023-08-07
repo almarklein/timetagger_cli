@@ -174,12 +174,7 @@ def resume():
         return 
 
     # Remove HIDDEN records
-    filtered_records = []
-    for r in records:
-        if "HIDDEN" in r["ds"]:
-            continue
-
-        filtered_records.append(r)
+    filtered_records = [r for r in records if "HIDDEN" not in r["ds"]]
 
     # Get last record
     last_record = filtered_records[-1]
