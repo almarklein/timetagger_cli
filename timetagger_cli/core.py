@@ -154,6 +154,65 @@ def stop():
         print_records(running_records)
 
 
+def resume():
+    """Start a timer with the same description as previous."""
+
+    now = int(time.time())
+    d = datetime.datetime.fromtimestamp(now)
+
+    today = datetime.datetime(d.year, d.month, d.day)
+    tomorrow = today + datetime.timedelta(1)
+
+    t1 = int(today.timestamp())
+    t2 = int(tomorrow.timestamp())
+
+    # Get records from today
+    records = request("GET", f"records?timerange={t1}-{t2}")["records"]
+
+    if len(records) == 0:
+        print("No records earlier today.")
+        return
+
+    # Remove HIDDEN records
+    filtered_records = [r for r in records if "HIDDEN" not in r["ds"]]
+
+    # Get last record
+    last_record = filtered_records[-1]
+
+    # Get running records, to stop them
+    running_records = get_running_records()
+    for r in running_records:
+        if r.get("ds", "") == last_record["ds"]:
+            print("Timer with this description is already running.")
+            print()
+            print_records([r])
+            return
+        r["t2"] = now
+
+    # Create new record
+    r = {
+        "key": generate_uid(),
+        "t1": now,
+        "t2": now,
+        "mt": time.time(),
+        "st": 0,
+        "ds": last_record["ds"],
+    }
+
+    # Push
+    records = running_records + [r]
+    request("PUT", "records", records)
+
+    # Report
+    if not running_records:
+        print("Timer started ...")
+    else:
+        print(f"Timer started ... and stopped {len(running_records)} running records.")
+
+    print()
+    print_records(records)
+
+
 def status():
     """Get an overview of today and this week. The exact content may change."""
 
