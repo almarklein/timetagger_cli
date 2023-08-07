@@ -16,7 +16,6 @@ def test_generate_uid():
 
 
 def test_user_config_dir():
-
     path1 = utils.user_config_dir()
     assert isinstance(path1, str)
     assert os.path.isdir(path1)
@@ -29,7 +28,6 @@ def test_user_config_dir():
 
 
 def test_readable_time():
-
     x = utils.readable_time(time.time())
     assert isinstance(x, str)
     assert x.count("-") == 2
@@ -38,7 +36,6 @@ def test_readable_time():
 
 
 def test_readable_duration():
-
     assert utils.readable_duration(0) == "0:00"
     assert utils.readable_duration(29) == "0:00"
     assert utils.readable_duration(31) == "0:01"

@@ -56,7 +56,6 @@ funcs, docs = _make_func_dict_and_docs(
 
 
 def main(argv=None):
-
     assert sys.version_info.major == 3, "This script needs to run with Python 3."
 
     # Get CLI args
