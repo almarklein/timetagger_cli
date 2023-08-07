@@ -171,7 +171,7 @@ def resume():
 
     if len(records) == 0:
         print("No records earlier today.")
-        return 
+        return
 
     # Remove HIDDEN records
     filtered_records = [r for r in records if "HIDDEN" not in r["ds"]]
