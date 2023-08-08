@@ -154,35 +154,56 @@ def stop():
         print_records(running_records)
 
 
-def resume():
-    """Start a timer with the same description as previous."""
+def resume(selected=None):
+    """Start a timer with the same description as the selected record."""
 
     now = int(time.time())
     d = datetime.datetime.fromtimestamp(now)
 
     today = datetime.datetime(d.year, d.month, d.day)
-    tomorrow = today + datetime.timedelta(1)
+    tomorrow = today + datetime.timedelta(days=1)
+    last_week = today - datetime.timedelta(days=7)
 
-    t1 = int(today.timestamp())
+    t1 = int(last_week.timestamp())
     t2 = int(tomorrow.timestamp())
 
-    # Get records from today
+    # Get records from the last week
     records = request("GET", f"records?timerange={t1}-{t2}")["records"]
-
-    if len(records) == 0:
-        print("No records earlier today.")
-        return
 
     # Remove HIDDEN records
     filtered_records = [r for r in records if "HIDDEN" not in r["ds"]]
 
-    # Get last record
-    last_record = filtered_records[-1]
+    if len(filtered_records) == 0:
+        print("No records within the last week.")
+        return
+
+    # Sort records by server time to get same order as on server
+    filtered_records.sort(key=lambda r: r["st"])
+
+    # Get last 10 records
+    if len(filtered_records) > 10:
+        filtered_records = filtered_records[-10:]
+
+    if isinstance(selected, type(None)):
+        print("Which record would you like to resume? [1]")
+        for i in range(len(filtered_records)):
+            number_string = f"[{len(filtered_records)-i}]"
+            print(f"{number_string.rjust(4)} {filtered_records[i]['ds']}")
+
+        selected = int(input("> ") or "1")
+    else:
+        try:
+            selected = int(selected)
+        except ValueError:
+            print("Error in index. Try: timetagger resume")
+            return
+
+    selected_record = filtered_records[-selected]
 
     # Get running records, to stop them
     running_records = get_running_records()
     for r in running_records:
-        if r.get("ds", "") == last_record["ds"]:
+        if r.get("ds", "") == selected_record["ds"]:
             print("Timer with this description is already running.")
             print()
             print_records([r])
@@ -196,7 +217,7 @@ def resume():
         "t2": now,
         "mt": time.time(),
         "st": 0,
-        "ds": last_record["ds"],
+        "ds": selected_record["ds"],
     }
 
     # Push
