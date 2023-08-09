@@ -177,8 +177,8 @@ def resume(selected=None):
         print("No records within the last week.")
         return
 
-    # Sort records by server time to get same order as on server
-    filtered_records.sort(key=lambda r: r["st"])
+    # Sort records by time
+    filtered_records.sort(key=lambda r: r["t2"])
 
     # Get last 10 records
     if len(filtered_records) > 10:
