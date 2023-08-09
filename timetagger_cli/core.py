@@ -184,7 +184,7 @@ def resume(selected=None):
     if len(filtered_records) > 10:
         filtered_records = filtered_records[-10:]
 
-    if isinstance(selected, type(None)):
+    if selected is None:
         print("Which record would you like to resume? [1]")
         for i in range(len(filtered_records)):
             number_string = f"[{len(filtered_records)-i}]"
