@@ -142,6 +142,35 @@ def start(args):
     print_records(records)
 
 
+def add(args):
+    """Add already finished task."""
+    description = args.description
+    now = int(time.time())
+
+    date = datetime.date.today()
+    if args.date:
+        date = args.date
+
+    start = datetime.datetime.combine(date, args.start_time)
+    end = datetime.datetime.combine(date, args.end_time)
+
+    # Create new record
+    r = {
+        "key": generate_uid(),
+        "t1": int(start.timestamp()),
+        "t2": int(end.timestamp()),
+        "mt": time.time(),
+        "st": 0,
+        "ds": str(description),
+    }
+
+    # Push
+    request("PUT", "records", [r])
+
+    print()
+    print_records([r])
+
+
 def stop(args):
     """Stop any running timers."""
     now = int(time.time())

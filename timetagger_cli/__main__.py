@@ -36,20 +36,15 @@ def setup_parser():
     # )
 
     subparsers = argparser.add_subparsers()
+
     create_command_parser(subparsers, version)
+
     create_command_parser(subparsers, timetagger_cli.setup)
+
     create_command_parser(subparsers, timetagger_cli.app)
+
     create_command_parser(subparsers, timetagger_cli.status)
-    start = create_command_parser(subparsers, timetagger_cli.start)
-    start.add_argument("description", help="Description. Use '#' to create tags.")
-    create_command_parser(subparsers, timetagger_cli.stop)
-    resume = create_command_parser(subparsers, timetagger_cli.resume)
-    resume.add_argument(
-        "selected",
-        type=int,
-        nargs="?",
-        help="Number of the record would you like to resume.",
-    )
+
     show = create_command_parser(subparsers, timetagger_cli.show)
     show.add_argument(
         "--days", type=int, help="Show records of the last <DAYS> days. Default: 1"
@@ -57,12 +52,43 @@ def setup_parser():
     show.add_argument(
         "--start",
         type=datetime.date.fromisoformat,
-        help="Start date in ISO-format (YYYY-MM-DD)",
+        help="Start date in ISO-format (YYYY-MM-DD).",
     )
     show.add_argument(
         "--end",
         type=datetime.date.fromisoformat,
-        help="Start date in ISO-format (YYYY-MM-DD)",
+        help="Start date in ISO-format (YYYY-MM-DD).",
+    )
+
+    start = create_command_parser(subparsers, timetagger_cli.start)
+    start.add_argument("description", help="Description. Use '#' to create tags.")
+
+    create_command_parser(subparsers, timetagger_cli.stop)
+
+    add = create_command_parser(subparsers, timetagger_cli.add)
+    add.add_argument(
+        "--date",
+        type=datetime.date.fromisoformat,
+        help="Date of the entry in ISO-format (YYYY-MM-DD). Default: today.",
+    )
+    add.add_argument(
+        "start_time",
+        type=datetime.time.fromisoformat,
+        help="Start time of the task in ISO-format (hh:mm or  hhmm).",
+    )
+    add.add_argument(
+        "end_time",
+        type=datetime.time.fromisoformat,
+        help="End time of the task in ISO-format (hh:mm or hhmm).",
+    )
+    add.add_argument("description", help="Description. Use '#' to create tags.")
+
+    resume = create_command_parser(subparsers, timetagger_cli.resume)
+    resume.add_argument(
+        "selected",
+        type=int,
+        nargs="?",
+        help="Number of the record would you like to resume.",
     )
 
     return argparser
