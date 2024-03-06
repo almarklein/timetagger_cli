@@ -4,7 +4,13 @@ import webbrowser
 
 import requests
 
-from .utils import generate_uid, readable_time, readable_duration, open_with_os_default
+from .utils import (
+    generate_uid,
+    total_time,
+    readable_time,
+    readable_duration,
+    open_with_os_default,
+)
 from .config import prepare_config_file, load_config
 
 
@@ -65,7 +71,7 @@ def get_running_records():
 # %% The commands
 
 
-def app():
+def app(args):
     """Open the TimeTagger app in your default browser."""
     config = load_config()
     parts = config["api_url"].rstrip("/").split("/")
@@ -74,7 +80,7 @@ def app():
     webbrowser.open(url)
 
 
-def setup():
+def setup(args):
     """Edit the API URL and token by opening the config file in your default editor."""
     filename = prepare_config_file()
     print("Config file: " + filename)
@@ -97,8 +103,9 @@ def setup():
 #     if not url.startswith("")
 
 
-def start(description):
+def start(args):
     """Start timer with the given description. Use '#' to create tags."""
+    description = args.description
     now = int(time.time())
 
     # Get running records, to stop them
@@ -135,7 +142,7 @@ def start(description):
     print_records(records)
 
 
-def stop():
+def stop(args):
     """Stop any running timers."""
     now = int(time.time())
 
@@ -154,8 +161,9 @@ def stop():
         print_records(running_records)
 
 
-def resume(selected=None):
+def resume(args):
     """Start a timer with the same description as the selected record."""
+    selected = args.selected
 
     now = int(time.time())
     d = datetime.datetime.fromtimestamp(now)
@@ -234,7 +242,7 @@ def resume(selected=None):
     print_records(records)
 
 
-def status():
+def status(args):
     """Get an overview of today and this week. The exact content may change."""
 
     now = int(time.time())
@@ -265,16 +273,8 @@ def status():
     running_records = [r for r in week_records if r["t1"] == r["t2"]]
 
     # Calculate totals
-    total_week = 0
-    total_day = 0
-    for r in week_records:
-        t1 = r["t1"]
-        t2 = r["t2"] if r["t1"] != r["t2"] else now
-        total_week += min(t_week2, t2) - max(t_week1, t1)
-    for r in day_records:
-        t1 = r["t1"]
-        t2 = r["t2"] if r["t1"] != r["t2"] else now
-        total_day += min(t_day2, t2) - max(t_day1, t1)
+    total_week = total_time(week_records, last_monday, next_monday)
+    total_day = total_time(day_records, today, tomorrow)
 
     # Report
     print()
@@ -291,3 +291,43 @@ def status():
     print()
     print("Todays records:")
     print_records(day_records)
+
+
+def show(args):
+    """List records of the requested time frame."""
+
+    t_now = int(time.time())
+    d = datetime.datetime.fromtimestamp(t_now)
+    if args.end:
+        end = datetime.datetime.combine(args.end, datetime.time.max).replace(
+            microsecond=0
+        )
+    else:
+        end = datetime.datetime.fromtimestamp(t_now)
+    if args.start:
+        start = datetime.datetime.combine(args.start, datetime.time.min)
+        if not args.end and args.days:
+            end = start + datetime.timedelta(days=args.days - 1)
+            end = end.replace(hour=23, minute=59, second=59, microsecond=0)
+    else:
+        days = 0
+        if args.days:
+            days = args.days - 1
+        start = end - datetime.timedelta(days=days)
+        start = start.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Collect records
+    ob = request(
+        "GET", f"records?timerange={int(start.timestamp())}-{int(end.timestamp())}"
+    )
+    records = [r for r in ob["records"] if not r.get("ds", "").startswith("HIDDEN")]
+    total = total_time(records, start, end)
+    days = (end - start).days + 1
+    print(f"Start:       {start}")
+    print(f"End:         {end}")
+    print(f"Time Period: {days} days")
+    print(f"Total Hours: {readable_duration(total)}")
+    print()
+
+    print(f"Records:")
+    print_records(records)

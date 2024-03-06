@@ -2,6 +2,8 @@
 The CLI logic.
 """
 
+import argparse
+import datetime
 import sys
 
 import timetagger_cli
@@ -10,78 +12,73 @@ import timetagger_cli
 # %% Some additional commands defined here
 
 
-def version():
+def version(args):
     """Print version."""
     print(f"timetagger_cli v{timetagger_cli.__version__}")
-
-
-def help():
-    """Show this help message and exit."""
-    print(docs)
 
 
 # %%
 
 
-def _make_func_dict_and_docs(*args):
-    funcs = {}
-    description = "usage: timetagger command [arguments]"
-    description += "\n\n" + timetagger_cli.__doc__.strip() + "\n\n"
-
-    for func in args:
-        if isinstance(func, str):
-            description += func + "\n\n"  # header
-        else:
-            funcs[func.__name__] = func
-            funcs[func.__name__.replace("_", "-")] = func
-            co = func.__code__
-            arg_names = " ".join(x.upper() for x in co.co_varnames[: co.co_argcount])
-            description += "    " + func.__name__ + " " + arg_names + "\n"
-            doc = "    " + func.__doc__.strip()
-            description += doc.replace("    ", "        ") + "\n"
-
-    return funcs, description
+def create_command_parser(subparsers, func):
+    parser = subparsers.add_parser(func.__name__, help=func.__doc__.strip())
+    parser.set_defaults(func=func)
+    return parser
 
 
-funcs, docs = _make_func_dict_and_docs(
-    "Available commands:",
-    version,
-    help,
-    timetagger_cli.app,
-    timetagger_cli.setup,
-    timetagger_cli.status,
-    timetagger_cli.start,
-    timetagger_cli.stop,
-    timetagger_cli.resume,
-)
+def setup_parser():
+    """setup argument parsing"""
+    argparser = argparse.ArgumentParser(
+        prog="timetagger", description=timetagger_cli.__doc__.strip()
+    )
+    # argparser.add_argument(
+    #     "-d", "--debug", action="store_true", help="enable debug output"
+    # )
+
+    subparsers = argparser.add_subparsers()
+    create_command_parser(subparsers, version)
+    create_command_parser(subparsers, timetagger_cli.setup)
+    create_command_parser(subparsers, timetagger_cli.app)
+    create_command_parser(subparsers, timetagger_cli.status)
+    start = create_command_parser(subparsers, timetagger_cli.start)
+    start.add_argument("description", help="Description. Use '#' to create tags.")
+    create_command_parser(subparsers, timetagger_cli.stop)
+    resume = create_command_parser(subparsers, timetagger_cli.resume)
+    resume.add_argument(
+        "selected",
+        type=int,
+        nargs="?",
+        help="Number of the record would you like to resume.",
+    )
+    show = create_command_parser(subparsers, timetagger_cli.show)
+    show.add_argument(
+        "--days", type=int, help="Show records of the last <DAYS> days. Default: 1"
+    )
+    show.add_argument(
+        "--start",
+        type=datetime.date.fromisoformat,
+        help="Start date in ISO-format (YYYY-MM-DD)",
+    )
+    show.add_argument(
+        "--end",
+        type=datetime.date.fromisoformat,
+        help="Start date in ISO-format (YYYY-MM-DD)",
+    )
+
+    return argparser
 
 
-def main(argv=None):
+def main():
     assert sys.version_info.major == 3, "This script needs to run with Python 3."
 
-    # Get CLI args
-    if argv is None:
-        argv = sys.argv[1:]
-    if not argv:
-        argv = ["help"]
-    if argv[0] in ["-h", "--help"]:
-        argv = ["help"]
-
-    # Get function to call
-    if argv[0] in funcs:
-        func = funcs[argv[0]]
+    parser = setup_parser()
+    args = parser.parse_args()
+    if hasattr(args, "func"):
+        args.func(args)
+        sys.exit(0)
     else:
-        sys.exit(f"Invalid use of TimeTagger command: {argv}")
-
-    # Call it
-    try:
-        func(*argv[1:])
-    except RuntimeError as err:
-        # Inside the functions, RunTimeError is raised in situations
-        # that can sufficiently be described with the error message.
-        # Other exceptions fall through, and their traceback is
-        # printed.
-        sys.exit(str(err))
+        parser.print_help()
+        sys.exit(0)
 
 
 if __name__ == "__main__":  # pragma: no cover

@@ -56,6 +56,18 @@ def user_config_dir(appname=None, roaming=False):
     return path
 
 
+def total_time(records, start, end):
+    total = 0
+    t_start = start.timestamp()
+    t_end = end.timestamp()
+    t_now = datetime.datetime.now().timestamp()
+    for r in records:
+        t1 = r["t1"]
+        t2 = r["t2"] if r["t1"] != r["t2"] else t_now
+        total += min(t_end, t2) - max(t_start, t1)
+    return total
+
+
 def readable_time(timestamp):
     """Turn a timestamp into a readable string."""
     value = datetime.datetime.fromtimestamp(timestamp)
