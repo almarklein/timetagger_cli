@@ -33,26 +33,24 @@ Run `timetagger` without arguments to get the list of available subcommands:
 
 ```
 $ timetagger
-usage: timetagger command [arguments]
+usage: timetagger [-h] [--version] {setup,app,status,show,start,stop,add,resume} ...
 
 Track your time from the command-line, a CLI for https://timetagger.app.
 
-Available commands:
+positional arguments:
+  {setup,app,status,show,start,stop,add,resume}
+    setup               Edit the API URL and token by opening the config file in your default editor.
+    app                 Open the TimeTagger app in your default browser.
+    status              Get an overview of today and this week. The exact content may change.
+    show                List records of the requested time frame.
+    start               Start timer with the given description. Use '#' to create tags.
+    stop                Stop any running timers.
+    add                 Add already finished task.
+    resume              Start a timer with the same description as the selected record.
 
-    version
-        Print version.
-    help
-        Show this help message and exit.
-    app
-        Open the TimeTagger app in your default browser.
-    setup
-        Edit the API URL and token by opening the config file in your default editor.
-    status
-        Get an overview of today and this week. The exact content may change.
-    start DESCRIPTION
-        Start timer with the given description. Use '#' to create tags.
-    stop
-        Stop any running timers.
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
 ```
 
 
@@ -70,7 +68,6 @@ Todays records:
  2021-03-23 09:42             12:12      2:30  #timeapp #oss cli
  2021-03-23 13:06             14:00      0:53  #timeapp #oss cli
  2021-03-23 14:00             14:58      0:58  #oss #vispy #meeting
- 2021-03-23 15:23             15:23      0:00  HIDDEN #oss #vispy #meeting
  2021-03-23 15:24             17:13      1:49  #timeapp #oss cli
  2021-03-23 17:13                 -      0:12  #timeapp #oss more cli
 ```
