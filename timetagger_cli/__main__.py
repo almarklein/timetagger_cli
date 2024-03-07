@@ -8,15 +8,6 @@ import sys
 
 import timetagger_cli
 
-
-# %% Some additional commands defined here
-
-
-def version(args):
-    """Print version."""
-    print(f"timetagger_cli v{timetagger_cli.__version__}")
-
-
 # %%
 
 
@@ -26,18 +17,21 @@ def create_command_parser(subparsers, func):
     return parser
 
 
-def setup_parser():
+def setup_parser(exit_on_error):
     """setup argument parsing"""
     argparser = argparse.ArgumentParser(
-        prog="timetagger", description=timetagger_cli.__doc__.strip()
+        prog="timetagger",
+        description=timetagger_cli.__doc__.strip(),
+        exit_on_error=exit_on_error,
     )
-    # argparser.add_argument(
-    #     "-d", "--debug", action="store_true", help="enable debug output"
-    # )
+
+    argparser.add_argument(
+        "--version",
+        action="version",
+        version=f"timetagger_cli v{timetagger_cli.__version__}",
+    )
 
     subparsers = argparser.add_subparsers()
-
-    create_command_parser(subparsers, version)
 
     create_command_parser(subparsers, timetagger_cli.setup)
 
@@ -94,17 +88,18 @@ def setup_parser():
     return argparser
 
 
-def main():
+def main(argv=None):
     assert sys.version_info.major == 3, "This script needs to run with Python 3."
 
-    parser = setup_parser()
-    args = parser.parse_args()
+    exit_on_error = True
+    if argv:
+        exit_on_error = False
+    parser = setup_parser(exit_on_error)
+    args = parser.parse_args(argv)
     if hasattr(args, "func"):
         args.func(args)
-        sys.exit(0)
     else:
         parser.print_help()
-        sys.exit(0)
 
 
 if __name__ == "__main__":  # pragma: no cover

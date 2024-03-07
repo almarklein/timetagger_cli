@@ -80,7 +80,7 @@ def app(args):
     webbrowser.open(url)
 
 
-def setup(args):
+def setup(args=None):
     """Edit the API URL and token by opening the config file in your default editor."""
     filename = prepare_config_file()
     print("Config file: " + filename)
@@ -170,7 +170,7 @@ def add(args):
     print_records([r])
 
 
-def stop(args):
+def stop(args=None):
     """Stop any running timers."""
     now = int(time.time())
 
@@ -270,7 +270,7 @@ def resume(args):
     print_records(records)
 
 
-def status(args):
+def status(args=None):
     """Get an overview of today and this week. The exact content may change."""
 
     now = int(time.time())
