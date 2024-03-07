@@ -145,7 +145,6 @@ def start(args):
 def add(args):
     """Add already finished task."""
     description = args.description
-    now = int(time.time())
 
     date = datetime.date.today()
     if args.date:
@@ -324,15 +323,12 @@ def status(args):
 
 def show(args):
     """List records of the requested time frame."""
-
-    t_now = int(time.time())
-    d = datetime.datetime.fromtimestamp(t_now)
     if args.end:
         end = datetime.datetime.combine(args.end, datetime.time.max).replace(
             microsecond=0
         )
     else:
-        end = datetime.datetime.fromtimestamp(t_now)
+        end = datetime.datetime.now()
     if args.start:
         start = datetime.datetime.combine(args.start, datetime.time.min)
         if not args.end and args.days:
@@ -358,5 +354,5 @@ def show(args):
     print(f"Total Hours: {readable_duration(total)}")
     print()
 
-    print(f"Records:")
+    print("Records:")
     print_records(records)
