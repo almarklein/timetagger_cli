@@ -17,12 +17,11 @@ def create_command_parser(subparsers, func):
     return parser
 
 
-def setup_parser(exit_on_error):
+def setup_parser():
     """setup argument parsing"""
     argparser = argparse.ArgumentParser(
         prog="timetagger",
         description=timetagger_cli.__doc__.strip(),
-        exit_on_error=exit_on_error,
     )
 
     argparser.add_argument(
@@ -91,10 +90,7 @@ def setup_parser(exit_on_error):
 def main(argv=None):
     assert sys.version_info.major == 3, "This script needs to run with Python 3."
 
-    exit_on_error = True
-    if argv:
-        exit_on_error = False
-    parser = setup_parser(exit_on_error)
+    parser = setup_parser()
     args = parser.parse_args(argv)
     if hasattr(args, "func"):
         args.func(args)

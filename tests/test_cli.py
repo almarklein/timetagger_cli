@@ -12,7 +12,8 @@ from _common import run_tests
 def _raise_RuntimeError():
     raise RuntimeError()
 
-def run_main(argv = None):
+
+def run_main(argv=None):
     capture = io.StringIO()
     with redirect_stdout(capture):
         try:
@@ -24,7 +25,6 @@ def run_main(argv = None):
 
 
 def test_cli():
-
     # Empty args is help
     text = run_main([])
     for x in ["timetagger", "CLI", "version", "setup", "status", "start", "stop"]:
@@ -41,17 +41,19 @@ def test_cli():
     assert timetagger_cli.__version__ in text_version
 
     # Invalid command
-    with raises(BaseException):
+    with raises(SystemExit) as excinfo:
         run_main(["notavalidcommand"])
+    assert excinfo.value.code == 2
 
     # Error in command
     timetagger_cli.core.request = lambda method, path, body=None: _raise_RuntimeError()
-    with raises(BaseException):  # RunTimeError is turned into SystemExit
+    with raises(RuntimeError):
         run_main(["status"])
 
     # Other errors fall through
-    with raises(ArgumentError):
-        run_main(["help", "help_func_has_no_args"])
+    with raises(SystemExit):
+        run_main(["status", "status_func_has_no_args"])
+    assert excinfo.value.code == 2
 
     # Run one command through to a function
     response = {"records": []}
