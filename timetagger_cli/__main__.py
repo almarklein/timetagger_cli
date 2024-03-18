@@ -11,6 +11,24 @@ import timetagger_cli
 # %%
 
 
+def date_fromisoformat(string):
+    """convert string to date object"""
+    try:
+        return datetime.date.fromisoformat(string)
+    except AttributeError:
+        # Python <= 3.6 does not support fromisoformat
+        return datetime.datetime.strptime(string, "%Y-%m-%d").date()
+
+
+def time_fromisoformat(string):
+    """convert string to time object"""
+    try:
+        return datetime.time.fromisoformat(string)
+    except AttributeError:
+        # Python <= 3.6 does not support fromisoformat
+        return datetime.datetime.strptime(string, "%H:%M").time()
+
+
 def create_command_parser(subparsers, func):
     """helper function to create a argparse subparser"""
     parser = subparsers.add_parser(func.__name__, help=func.__doc__.strip())
@@ -45,12 +63,12 @@ def setup_parser():
     )
     show.add_argument(
         "--start",
-        type=datetime.date.fromisoformat,
+        type=date_fromisoformat,
         help="Start date in ISO-format (YYYY-MM-DD).",
     )
     show.add_argument(
         "--end",
-        type=datetime.date.fromisoformat,
+        type=date_fromisoformat,
         help="Start date in ISO-format (YYYY-MM-DD).",
     )
 
@@ -62,17 +80,17 @@ def setup_parser():
     add = create_command_parser(subparsers, timetagger_cli.add)
     add.add_argument(
         "--date",
-        type=datetime.date.fromisoformat,
+        type=date_fromisoformat,
         help="Date of the entry in ISO-format (YYYY-MM-DD). Default: today.",
     )
     add.add_argument(
         "start_time",
-        type=datetime.time.fromisoformat,
+        type=time_fromisoformat,
         help="Start time of the task in ISO-format (hh:mm or  hhmm).",
     )
     add.add_argument(
         "end_time",
-        type=datetime.time.fromisoformat,
+        type=time_fromisoformat,
         help="End time of the task in ISO-format (hh:mm or hhmm).",
     )
     add.add_argument("description", help="Description. Use '#' to create tags.")
