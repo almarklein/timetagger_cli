@@ -1,7 +1,6 @@
 import sys
 import io
 from contextlib import redirect_stdout
-from argparse import ArgumentError
 
 import timetagger_cli
 from timetagger_cli import __main__
@@ -18,8 +17,8 @@ def run_main(argv=None):
     with redirect_stdout(capture):
         try:
             __main__.main(argv)
-        except SystemExit as exit:
-            if exit.code != 0:
+        except SystemExit as exit_exception:
+            if exit_exception.code != 0:
                 raise
     return capture.getvalue()
 

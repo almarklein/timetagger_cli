@@ -12,6 +12,7 @@ import timetagger_cli
 
 
 def create_command_parser(subparsers, func):
+    """helper function to create a argparse subparser"""
     parser = subparsers.add_parser(func.__name__, help=func.__doc__.strip())
     parser.set_defaults(func=func)
     return parser
