@@ -2,86 +2,119 @@
 The CLI logic.
 """
 
+import argparse
+import datetime
 import sys
 
 import timetagger_cli
 
-
-# %% Some additional commands defined here
-
-
-def version():
-    """Print version."""
-    print(f"timetagger_cli v{timetagger_cli.__version__}")
-
-
-def help():
-    """Show this help message and exit."""
-    print(docs)
-
-
 # %%
 
 
-def _make_func_dict_and_docs(*args):
-    funcs = {}
-    description = "usage: timetagger command [arguments]"
-    description += "\n\n" + timetagger_cli.__doc__.strip() + "\n\n"
-
-    for func in args:
-        if isinstance(func, str):
-            description += func + "\n\n"  # header
-        else:
-            funcs[func.__name__] = func
-            funcs[func.__name__.replace("_", "-")] = func
-            co = func.__code__
-            arg_names = " ".join(x.upper() for x in co.co_varnames[: co.co_argcount])
-            description += "    " + func.__name__ + " " + arg_names + "\n"
-            doc = "    " + func.__doc__.strip()
-            description += doc.replace("    ", "        ") + "\n"
-
-    return funcs, description
+def date_fromisoformat(string):
+    """convert string to date object"""
+    try:
+        return datetime.date.fromisoformat(string)
+    except AttributeError:
+        # Python <= 3.6 does not support fromisoformat
+        return datetime.datetime.strptime(string, "%Y-%m-%d").date()
 
 
-funcs, docs = _make_func_dict_and_docs(
-    "Available commands:",
-    version,
-    help,
-    timetagger_cli.app,
-    timetagger_cli.setup,
-    timetagger_cli.status,
-    timetagger_cli.start,
-    timetagger_cli.stop,
-    timetagger_cli.resume,
-)
+def time_fromisoformat(string):
+    """convert string to time object"""
+    try:
+        return datetime.time.fromisoformat(string)
+    except AttributeError:
+        # Python <= 3.6 does not support fromisoformat
+        return datetime.datetime.strptime(string, "%H:%M").time()
+
+
+def create_command_parser(subparsers, func):
+    """helper function to create a argparse subparser"""
+    parser = subparsers.add_parser(func.__name__, help=func.__doc__.strip())
+    parser.set_defaults(func=func)
+    return parser
+
+
+def setup_parser():
+    """setup argument parsing"""
+    argparser = argparse.ArgumentParser(
+        prog="timetagger",
+        description=timetagger_cli.__doc__.strip(),
+    )
+
+    argparser.add_argument(
+        "--version",
+        action="version",
+        version=f"timetagger_cli v{timetagger_cli.__version__}",
+    )
+
+    subparsers = argparser.add_subparsers()
+
+    create_command_parser(subparsers, timetagger_cli.setup)
+
+    create_command_parser(subparsers, timetagger_cli.app)
+
+    create_command_parser(subparsers, timetagger_cli.status)
+
+    show = create_command_parser(subparsers, timetagger_cli.show)
+    show.add_argument(
+        "--days", type=int, help="Show records of the last <DAYS> days. Default: 1"
+    )
+    show.add_argument(
+        "--start",
+        type=date_fromisoformat,
+        help="Start date in ISO-format (YYYY-MM-DD).",
+    )
+    show.add_argument(
+        "--end",
+        type=date_fromisoformat,
+        help="Start date in ISO-format (YYYY-MM-DD).",
+    )
+
+    start = create_command_parser(subparsers, timetagger_cli.start)
+    start.add_argument("description", help="Description. Use '#' to create tags.")
+
+    create_command_parser(subparsers, timetagger_cli.stop)
+
+    add = create_command_parser(subparsers, timetagger_cli.add)
+    add.add_argument(
+        "--date",
+        type=date_fromisoformat,
+        help="Date of the entry in ISO-format (YYYY-MM-DD). Default: today.",
+    )
+    add.add_argument(
+        "start_time",
+        type=time_fromisoformat,
+        help="Start time of the task in ISO-format (hh:mm or  hhmm).",
+    )
+    add.add_argument(
+        "end_time",
+        type=time_fromisoformat,
+        help="End time of the task in ISO-format (hh:mm or hhmm).",
+    )
+    add.add_argument("description", help="Description. Use '#' to create tags.")
+
+    resume = create_command_parser(subparsers, timetagger_cli.resume)
+    resume.add_argument(
+        "selected",
+        type=int,
+        nargs="?",
+        help="Number of the record would you like to resume.",
+    )
+
+    return argparser
 
 
 def main(argv=None):
     assert sys.version_info.major == 3, "This script needs to run with Python 3."
 
-    # Get CLI args
-    if argv is None:
-        argv = sys.argv[1:]
-    if not argv:
-        argv = ["help"]
-    if argv[0] in ["-h", "--help"]:
-        argv = ["help"]
-
-    # Get function to call
-    if argv[0] in funcs:
-        func = funcs[argv[0]]
+    parser = setup_parser()
+    args = parser.parse_args(argv)
+    if hasattr(args, "func"):
+        args.func(args)
     else:
-        sys.exit(f"Invalid use of TimeTagger command: {argv}")
-
-    # Call it
-    try:
-        func(*argv[1:])
-    except RuntimeError as err:
-        # Inside the functions, RunTimeError is raised in situations
-        # that can sufficiently be described with the error message.
-        # Other exceptions fall through, and their traceback is
-        # printed.
-        sys.exit(str(err))
+        parser.print_help()
 
 
 if __name__ == "__main__":  # pragma: no cover

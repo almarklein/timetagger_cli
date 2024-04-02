@@ -1,3 +1,4 @@
+from argparse import Namespace
 import time
 
 from timetagger_cli import core
@@ -48,7 +49,7 @@ def test_start():
     lines = []
     core.print = lambda *args: lines.append(" ".join(str(x) for x in args) + "\n")
 
-    core.start("foobar")
+    core.start(Namespace(description="foobar"))
 
     text = "\n".join(lines)
     lines.clear()
@@ -57,7 +58,7 @@ def test_start():
     assert "and stopped" not in text.lower()
 
     response["records"].append(dict(t1=3, t2=3))
-    core.start("foobar")
+    core.start(Namespace(description="foobar"))
 
     text = "\n".join(lines)
     lines.clear()
