@@ -226,7 +226,10 @@ def resume(args):
             number_string = f"[{len(filtered_records)-i}]"
             print(f"{number_string.rjust(4)} {filtered_records[i]['ds']}")
 
-        selected = int(input("> ") or "1")
+        try:
+            selected = int(input("> ") or "1")
+        except KeyboardInterrupt:
+            return
     else:
         try:
             selected = int(selected)
