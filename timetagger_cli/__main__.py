@@ -118,7 +118,8 @@ def main(argv=None):
         try:
             args.func(args)
         except RuntimeError as err:
-            sys.exit("Timetagger runtime error: " + err.args[0])
+            msg = err.args[0] if err.args else "''"
+            sys.exit(f"Timetagger runtime error: msg")
     else:
         parser.print_help()
 

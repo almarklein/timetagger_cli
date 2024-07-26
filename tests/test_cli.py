@@ -46,7 +46,7 @@ def test_cli():
 
     # Error in command
     timetagger_cli.core.request = lambda method, path, body=None: _raise_RuntimeError()
-    with raises(RuntimeError):
+    with raises(SystemExit):
         run_main(["status"])
 
     # Other errors fall through
