@@ -112,7 +112,10 @@ def main(argv=None):
     parser = setup_parser()
     args = parser.parse_args(argv)
     if hasattr(args, "func"):
-        args.func(args)
+        try:
+            args.func(args)
+        except RuntimeError as err:
+            sys.exit("Timetagger runtime error: " + err.args[0])
     else:
         parser.print_help()
 
