@@ -6,4 +6,4 @@ __version__ = "23.8.3"
 
 version_info = tuple(map(int, __version__.split(".")))
 
-from .core import app, setup, status, show, start, stop, add, resume  # noqa
+from .core import app, setup, status, show, start, stop, add, resume, diagnose  # noqa

@@ -72,6 +72,9 @@ def setup_parser():
         help="Start date in ISO-format (YYYY-MM-DD).",
     )
 
+    diagnose = create_command_parser(subparsers, timetagger_cli.diagnose)
+    diagnose.add_argument("--fix", action="store_true", help="fix error records")
+
     start = create_command_parser(subparsers, timetagger_cli.start)
     start.add_argument("description", help="Description. Use '#' to create tags.")
 
