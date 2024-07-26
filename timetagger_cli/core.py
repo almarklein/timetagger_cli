@@ -226,7 +226,10 @@ def resume(args):
             number_string = f"[{len(filtered_records)-i}]"
             print(f"{number_string.rjust(4)} {filtered_records[i]['ds']}")
 
-        selected = int(input("> ") or "1")
+        try:
+            selected = int(input("> ") or "1")
+        except KeyboardInterrupt:
+            return
     else:
         try:
             selected = int(selected)
@@ -356,3 +359,76 @@ def show(args):
 
     print("Records:")
     print_records(records)
+
+
+def diagnose(args):
+    """Load all records and perform diagnostics to detect errors. Use '--fix' to fix errors."""
+
+    def show_record(prefix, r):
+        dt1 = datetime.datetime.fromtimestamp(r["t1"])
+        dt2 = datetime.datetime.fromtimestamp(r["t2"])
+        print(f"{prefix}: {r['key']}, from {dt1} to {dt2}")
+
+    # Get records and sort by t1
+    ob = request("GET", f"updates?since=0")
+    records = ob["records"]
+    records = sorted(records, key=lambda r: r["t1"])
+
+    # Prep
+    early_date = datetime.datetime(2000, 1, 1)
+    late_date = datetime.datetime.now() + datetime.timedelta(days=1)
+    very_late_date = datetime.datetime.now() + datetime.timedelta(days=365 * 2)
+
+    # Investigate records
+    suspicious_records = []
+    wrong_records = []
+    for r in records:
+        t1, t2 = r["t1"], r["t2"]
+        if t1 < 0 or t2 < 0:
+            wrong_records.append(("negative timestamp", r))
+        elif t1 > t2:
+            wrong_records.append(("t1 larger than t2", r))
+        elif datetime.datetime.fromtimestamp(r["t2"]) > very_late_date:
+            wrong_records.append(("far future", r))
+        elif datetime.datetime.fromtimestamp(r["t1"]) < early_date:
+            suspicious_records.append(("early", r))
+        elif datetime.datetime.fromtimestamp(r["t2"]) > late_date:
+            suspicious_records.append(("future", r))
+        elif t2 - t1 > 86400 * 2:
+            suspicious_records.append(("duration over two days", r))
+        elif t1 == t2 and abs(time.time() - t1) > 86400 * 2:
+            ndays = round(abs(time.time() - t1) / 86400)
+            suspicious_records.append((f"running for about {ndays} days", r))
+
+    suspicious_records.sort()
+    wrong_records.sort()
+
+    print(f"Checked {len(records)} records")
+
+    # Show records
+    if wrong_records:
+        print("Errored records:")
+        for prefix, r in wrong_records:
+            show_record(prefix + ":", r)
+    if suspicious_records:
+        print("Suspicious records:")
+        for prefix, r in suspicious_records:
+            show_record(prefix + ":", r)
+
+    if not wrong_records and not suspicious_records:
+        print("All looks good")
+
+    # Fixing wrong records
+    if args.fix:
+        for prefix, r in wrong_records:
+            if "t1 larger than t2 " in prefix:
+                r["t1"], r["t2"] = r["t2"], r["t1"]
+                request("PUT", "records", [r])
+            else:
+                dt = abs(r["t1"] - r["t2"])
+                if dt > 86400 * 1.2:
+                    dt = 3600
+                r["t1"] = int(time.time())
+                r["t2"] = r["t1"] + dt
+                request("PUT", "records", [r])
+            print(f"Updated {r['key']}")

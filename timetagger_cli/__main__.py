@@ -72,6 +72,9 @@ def setup_parser():
         help="Start date in ISO-format (YYYY-MM-DD).",
     )
 
+    diagnose = create_command_parser(subparsers, timetagger_cli.diagnose)
+    diagnose.add_argument("--fix", action="store_true", help="fix error records")
+
     start = create_command_parser(subparsers, timetagger_cli.start)
     start.add_argument("description", help="Description. Use '#' to create tags.")
 
@@ -112,7 +115,11 @@ def main(argv=None):
     parser = setup_parser()
     args = parser.parse_args(argv)
     if hasattr(args, "func"):
-        args.func(args)
+        try:
+            args.func(args)
+        except RuntimeError as err:
+            msg = err.args[0] if err.args else "''"
+            sys.exit(f"Timetagger runtime error: {msg}")
     else:
         parser.print_help()
 
