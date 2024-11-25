@@ -28,8 +28,13 @@ def request(method, path, body=None):
     if not token:
         raise RuntimeError("api_token not set, run 'timetagger setup' first.")
 
+    if "auth_username" in config.keys() and "auth_password" in config.keys():
+        auth = (config["auth_username"], config["auth_password"])
+    else:
+        auth = None
+
     headers = {"authtoken": token}
-    response = requests.request(method.upper(), url, json=body, headers=headers)
+    response = requests.request(method.upper(), url, json=body, headers=headers, auth=auth)
 
     if response.status_code == 200:
         return response.json()
