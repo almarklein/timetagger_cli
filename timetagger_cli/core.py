@@ -30,7 +30,9 @@ def request(method, path, body=None):
         raise RuntimeError("api_token not set, run 'timetagger setup' first.")
 
     headers = {"authtoken": token}
-    response = requests.request(method.upper(), url, json=body, headers=headers, verify=ssl_verify)
+    response = requests.request(
+        method.upper(), url, json=body, headers=headers, verify=ssl_verify
+    )
 
     if response.status_code == 200:
         return response.json()
