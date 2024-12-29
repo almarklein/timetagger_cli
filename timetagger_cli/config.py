@@ -6,7 +6,7 @@ import toml
 from .utils import user_config_dir
 
 initial_config_text = """
-# This is the TimeTagger CLI configurationm, in toml format.
+# This is the TimeTagger CLI configuration, in toml format.
 # Clear or remove this file to reset to factory defaults.
 
 # Set the base API URL, for example:
