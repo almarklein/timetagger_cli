@@ -17,6 +17,13 @@ api_url = "https://timetagger.app/api/v2/"
 # Set your API token.
 # Go to the account page, copy the token, paste it here (between the quotes).
 api_token = ""
+
+# If you're self-hosting, you might need to set your own self-signed certificate or disable the verification of SSL certificate.
+# Disabling the certificate verification is a potentially risky action that might expose your application to attacks.
+# You can set the path to a self signed certificate for verification and validation:
+# - ssl_verify = "path/to/certificate"
+# For more information, visit: https://letsencrypt.org/docs/certificates-for-localhost/
+ssl_verify = true
 """.lstrip().replace(
     "\r\n", "\n"
 )
@@ -45,6 +52,8 @@ def load_config():
         )
     if "api_token" not in config:
         raise RuntimeError("No api_token set in config. Run 'timetagger setup' to fix.")
+    if "ssl_verify" not in config:
+        config |= {"ssl_verify": True}
     return config
 
 
