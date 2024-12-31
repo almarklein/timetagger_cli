@@ -89,8 +89,6 @@ def setup(args=None):
     filename = prepare_config_file()
     print("Config file: " + filename)
     print("Will now (try to) open the config file. Just edit and save the file.")
-    # Config file contains user secret so it should not be readable to others
-    os.chmod(filename, 0o640)
     open_with_os_default(filename)
 
 

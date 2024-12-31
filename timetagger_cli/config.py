@@ -71,6 +71,8 @@ def prepare_config_file():
         else:
             with open(filename, "wb") as f:
                 f.write(initial_config_text.encode())
+        # Config file contains user secret so it should not be readable to others
+        os.chmod(filename, 0o640)
     except Exception as err:  # pragma: no cover
         print(f"Could not prepare config file: {err}")
 
