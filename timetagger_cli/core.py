@@ -1,6 +1,7 @@
 import time
 import datetime
 import webbrowser
+import os
 
 import requests
 
@@ -25,11 +26,14 @@ def request(method, path, body=None):
     config = load_config()
     url = config["api_url"].rstrip("/") + "/" + path.lstrip("/")
     token = config["api_token"].strip()
+    ssl_verify = config["ssl_verify"]
     if not token:
         raise RuntimeError("api_token not set, run 'timetagger setup' first.")
 
     headers = {"authtoken": token}
-    response = requests.request(method.upper(), url, json=body, headers=headers)
+    response = requests.request(
+        method.upper(), url, json=body, headers=headers, verify=ssl_verify
+    )
 
     if response.status_code == 200:
         return response.json()

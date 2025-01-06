@@ -16,6 +16,7 @@ def test_load_config():
     assert isinstance(d, dict)
     assert "api_url" in d
     assert "api_token" in d
+    assert "ssl_verify" in d
 
 
 def test_load_config_fail():
@@ -61,6 +62,12 @@ def test_load_config_fail():
         f.write(text.encode())
     with raises(RuntimeError):
         config.load_config()
+
+    # File without ssl_verify
+    with open(filename, "wb") as f:
+        text = ori_text.replace("ssl_verify", "xxx_verify")
+        f.write(text.encode())
+    assert config.load_config()
 
     # But ok to add other stuff ...
     with open(filename, "wb") as f:
