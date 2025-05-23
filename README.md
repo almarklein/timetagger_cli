@@ -17,7 +17,11 @@ a terminal.
 
 ## Installation
 
-The TimeTagger CLI requires Python 3.6 or higher. Install with `pip`:
+The TimeTagger CLI requires Python 3.9 or higher. Install with your favorite Python package manager, e.g.:
+```
+$ pipx install timetagger_cli
+```
+or
 ```
 $ pip install timetagger_cli
 ```
