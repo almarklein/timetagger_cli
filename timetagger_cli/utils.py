@@ -77,5 +77,5 @@ def readable_time(timestamp):
 def readable_duration(nsecs):
     """Turn a duration in seconds into a reabable string."""
     m = round(nsecs / 60)
-    # return f"{m//60:.0f}h{m%60:.0f}m"
-    return f"{m//60:.0f}:{m%60:02.0f}"
+    # return f"{m // 60:.0f}h{m % 60:.0f}m"
+    return f"{m // 60:.0f}:{m % 60:02.0f}"
