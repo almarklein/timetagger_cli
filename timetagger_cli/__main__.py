@@ -5,28 +5,21 @@ The CLI logic.
 import argparse
 import datetime
 import sys
+import dateparser
 
 import timetagger_cli
 
 # %%
 
 
-def date_fromisoformat(string):
+def date_from_natural_language(string):
     """convert string to date object"""
-    try:
-        return datetime.date.fromisoformat(string)
-    except AttributeError:
-        # Python <= 3.6 does not support fromisoformat
-        return datetime.datetime.strptime(string, "%Y-%m-%d").date()
+    return dateparser.parse(string).date()
 
 
-def time_fromisoformat(string):
+def time_from_natural_language(string):
     """convert string to time object"""
-    try:
-        return datetime.time.fromisoformat(string)
-    except AttributeError:
-        # Python <= 3.6 does not support fromisoformat
-        return datetime.datetime.strptime(string, "%H:%M").time()
+    return dateparser.parse(string).time()
 
 
 def create_command_parser(subparsers, func):
@@ -63,12 +56,12 @@ def setup_parser():
     )
     show.add_argument(
         "--start",
-        type=date_fromisoformat,
+        type=date_from_natural_language,
         help="Start date in ISO-format (YYYY-MM-DD).",
     )
     show.add_argument(
         "--end",
-        type=date_fromisoformat,
+        type=date_from_natural_language,
         help="Start date in ISO-format (YYYY-MM-DD).",
     )
 
@@ -83,17 +76,17 @@ def setup_parser():
     add = create_command_parser(subparsers, timetagger_cli.add)
     add.add_argument(
         "--date",
-        type=date_fromisoformat,
+        type=date_from_natural_language,
         help="Date of the entry in ISO-format (YYYY-MM-DD). Default: today.",
     )
     add.add_argument(
         "start_time",
-        type=time_fromisoformat,
+        type=time_from_natural_language,
         help="Start time of the task in ISO-format (hh:mm or  hhmm).",
     )
     add.add_argument(
         "end_time",
-        type=time_fromisoformat,
+        type=time_from_natural_language,
         help="End time of the task in ISO-format (hh:mm or hhmm).",
     )
     add.add_argument("description", help="Description. Use '#' to create tags.")
