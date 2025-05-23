@@ -1,7 +1,6 @@
 import time
 import datetime
 import webbrowser
-import os
 
 import requests
 
@@ -38,7 +37,7 @@ def request(method, path, body=None):
     if response.status_code == 200:
         return response.json()
     else:
-        raise RuntimeError(f"{response.status_code} - { response.text}")
+        raise RuntimeError(f"{response.status_code} - {response.text}")
 
 
 def print_records(records):

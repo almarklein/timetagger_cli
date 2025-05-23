@@ -2,12 +2,12 @@
 The CLI logic.
 """
 
-import argparse
-import datetime
 import sys
-import dateparser
+import argparse
 
+import dateparser
 import timetagger_cli
+
 
 # %%
 
